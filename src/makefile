@@ -3,7 +3,7 @@ CXX_FLAGS=-g
 
 .PHONY: clean
 
-rt: main.o vec3.hpp
+rt: main.o vec3.hpp ray.hpp
 	$(CXX) -o rt main.o
 
 main.o: main.cpp
