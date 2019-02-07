@@ -18,12 +18,12 @@ public:
   inline float operator[](int idx) const;
   inline float& operator[](int idx);
 
-  inline vec3 operator+(const vec3& w);
-  inline vec3 operator-(const vec3& w);
-  inline vec3 operator*(const vec3& w);
-  inline vec3 operator/(const vec3& w);
-  inline vec3 operator*(float t);
-  inline vec3 operator/(float t);
+  inline vec3 operator+(const vec3& w) const;
+  inline vec3 operator-(const vec3& w) const;
+  inline vec3 operator*(const vec3& w) const;
+  inline vec3 operator/(const vec3& w) const;
+  inline vec3 operator*(float t) const;
+  inline vec3 operator/(float t) const;
   inline vec3& operator+=(const vec3& v2);
   inline vec3& operator-=(const vec3& v2);
   inline vec3& operator*=(const vec3& v2);
@@ -86,38 +86,38 @@ inline float& vec3::operator[](int idx) {
   }
 }
 
-inline vec3 vec3::operator+(const vec3& w) {
+inline vec3 vec3::operator+(const vec3& w) const {
   return vec3(x + w.x,
 	      y + w.y,
 	      z + w.z);
 }
 
-inline vec3 vec3::operator-(const vec3& w) {
+inline vec3 vec3::operator-(const vec3& w) const {
   return vec3(x - w.x,
 	      y - w.y,
 	      z - w.z);
 }
 
-inline vec3 vec3::operator*(const vec3& w) {
+inline vec3 vec3::operator*(const vec3& w)  const {
   return vec3(x * w.x,
 	      y * w.y,
 	      z * w.z);
 }
 
-inline vec3 vec3::operator/(const vec3& w) {
+inline vec3 vec3::operator/(const vec3& w) const {
   assert(w.x != 0.f && w.y != 0.f && w.z != 0.f);
   return vec3(x / w.x,
 	      y / w.y,
 	      z / w.z);
 }
 
-inline vec3 vec3::operator*(float t) {
+inline vec3 vec3::operator*(float t) const {
   return vec3(x * t,
 	      y * t,
 	      z * t);
 }
 
-inline vec3 vec3::operator/(float t) {
+inline vec3 vec3::operator/(float t) const {
   assert(t != 0.f);
   return vec3(x / t,
 	      y / t,
@@ -193,6 +193,10 @@ inline vec3 cross(const vec3& v, const vec3& w) {
 
 inline vec3 normalize(vec3 v) {
   return v / v.length();
+}
+
+inline vec3 operator*(float t, const vec3& v) {
+  return v * t;
 }
 
 inline std::istream& operator>>(std::istream& is, vec3 &v) {
