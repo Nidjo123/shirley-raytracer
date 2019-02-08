@@ -34,10 +34,10 @@ hitable *random_scene() {
       float choose_mat = drand48();
       vec3 center(a+0.9f*drand48(), 0.2f, b+0.9f*drand48());
       if ((center-vec3(4.f, 0.2f, 0.f)).length() > 0.9) {
-	if (choose_mat < 0.8) { // diffuse
+	if (choose_mat < 0.7) { // diffuse
 	  list[i++] = new sphere(center, 0.2f, new lambertian(vec3(drand48()*drand48(), drand48()*drand48(), drand48()*drand48())));
-	} else if (choose_mat < 0.95) { // metal
-	  list[i++] = new sphere(center, 0.2f, new metal(vec3(0.5f*(1.f+drand48()), 0.5f*(1.f+drand48()), 0.5f*(1.f+drand48())), drand48()));
+	} else if (choose_mat < 0.9) { // metal
+	  list[i++] = new sphere(center, 0.2f, new metal(vec3(0.5f*(1.f+drand48()), 0.5f*(1.f+drand48()), 0.5f*(1.f+drand48())), drand48()*drand48()*drand48()));
 	} else { // dielectric
 	  list[i++] = new sphere(center, 0.2f, new dielectric(1.f+3.f*drand48()));
 	}
@@ -53,9 +53,9 @@ hitable *random_scene() {
 }
 
 int main() {
-  int nx = 800;
-  int ny = 600;
-  int ns = 32;
+  int nx = 1920;
+  int ny = 1080;
+  int ns = 256;
 
   std::cout << "P3\n" << nx << " " << ny << "\n255\n";
 
@@ -68,12 +68,12 @@ int main() {
 
   hitable *world =  random_scene();//new hitable_list(list, 5);
 
-  vec3 lookfrom = vec3(4, 0.5f, 5);
-  vec3 lookat = vec3(0, 0.65f, 0);
+  vec3 lookfrom = vec3(5, 1.f, 5.5f);
+  vec3 lookat = vec3(1, 0.5f, 0);
   vec3 vup = vec3(0, 1, 0);
   float dist_to_focus = (lookfrom-lookat).length()*2.f;
-  float aperture = 0.01f;
-  camera cam(lookfrom, lookat, vup, 45.f, float(nx)/float(ny), aperture, dist_to_focus);
+  float aperture = 0.08f;
+  camera cam(lookfrom, lookat, vup, 20.f, float(nx)/float(ny), aperture, dist_to_focus);
 
   for (int j = ny-1; j >= 0; j--)
     for (int i = 0; i < nx; i++) {

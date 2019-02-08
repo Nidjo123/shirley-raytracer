@@ -1,5 +1,5 @@
 CXX=g++
-CXX_FLAGS=-g
+CXX_FLAGS=-O3
 
 .PHONY: clean
 
