@@ -2,19 +2,21 @@
 #define SPHERE_HPP
 
 #include "hitable.hpp"
+#include "material.hpp"
 
 class sphere : public hitable {
 public:
   sphere() = default;
-  sphere(vec3 c, float r);
+  sphere(vec3 c, float r, material *mat);
   virtual bool hit(const ray& r, float t_min, float t_max, hit_record& hitrec) const;
 
   vec3 center;
   float radius;
+  material *mat;
 };
 
-sphere::sphere(vec3 c, float r)
-  : center(c), radius(r) {
+sphere::sphere(vec3 c, float r, material *mat)
+  : center(c), radius(r), mat(mat) {
 
 }
 
@@ -31,6 +33,7 @@ bool sphere::hit(const ray& r, float t_min, float t_max, hit_record& hitrec) con
       hitrec.t = tmp;
       hitrec.p = r(tmp);
       hitrec.normal = (hitrec.p - center) / radius;
+      hitrec.mat = mat;
       return true;
     }
     tmp = (-b + sqrt(discriminant)) / (2.0f*a);
@@ -38,6 +41,7 @@ bool sphere::hit(const ray& r, float t_min, float t_max, hit_record& hitrec) con
       hitrec.t = tmp;
       hitrec.p = r(tmp);
       hitrec.normal = (hitrec.p - center) / radius;
+      hitrec.mat = mat;
       return true;
     }
   }

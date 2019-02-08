@@ -8,19 +8,15 @@
 #include "hitable_list.hpp"
 #include "camera.hpp"
 
-vec3 random_in_unit_sphere() {
-  vec3 p;
-  do {
-    p = 2.0f*vec3(drand48(), drand48(), drand48()) - vec3(1, 1, 1);
-  } while (p.sqr_length() >= 1.0f);
-  return p;
-}
-
-vec3 color(const ray& r, hitable *world) {
+vec3 color(const ray& r, hitable *world, int depth) {
   hit_record rec;
   if (world->hit(r, 0.001f, MAXFLOAT, rec)) {
-    vec3 target = rec.p + rec.normal + random_in_unit_sphere();
-    return 0.5f*color(ray(rec.p, target-rec.p), world);
+    ray scattered;
+    vec3 attenuation;
+    if (depth < 50 && rec.mat->scatter(r, rec, attenuation, scattered))
+      return attenuation * color(scattered, world, depth+1);
+    else
+      return vec3(0, 0, 0);
   }
 
   vec3 dir = normalize(r.direction());
@@ -35,10 +31,13 @@ int main() {
 
   std::cout << "P3\n" << nx << " " << ny << "\n255\n";
 
-  hitable *list[2];
-  list[0] = new sphere(vec3(0.0f, 0.0f, -1.0f), 0.5f);
-  list[1] = new sphere(vec3(0.0f, -100.5f, -1.0f), 100.0f);
-  hitable *world = new hitable_list(list, 2);
+  hitable *list[4];
+  list[0] = new sphere(vec3(0.0f, 0.0f, -1.0f), 0.5f, new lambertian(vec3(0.8f, 0.3f, 0.3f)));
+  list[1] = new sphere(vec3(0.0f, -100.5f, -1.0f), 100.0f, new lambertian(vec3(0.8f, 0.8f, 0.0f)));
+  list[2] = new sphere(vec3(1.0f, 0.0f, -1.0f), 0.5f, new metal(vec3(0.8f, 0.6f, 0.2f)));
+  list[3] = new sphere(vec3(-1.0f, 0.0f, -1.0f), 0.5f, new metal(vec3(0.8f, 0.8f, 0.8f)));
+
+  hitable *world = new hitable_list(list, 4);
 
   camera cam;
 
@@ -49,7 +48,7 @@ int main() {
 	float u = float(i + drand48()) / float(nx);
 	float v = float(j + drand48()) / float(ny);
 	ray r = cam.get_ray(u, v);
-	col += color(r, world);
+	col += color(r, world, 0);
       }
       col /= float(ns);
       col = vec3(sqrt(col[0]), sqrt(col[1]), sqrt(col[2]));
