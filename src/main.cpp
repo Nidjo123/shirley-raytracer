@@ -8,11 +8,20 @@
 #include "hitable_list.hpp"
 #include "camera.hpp"
 
+vec3 random_in_unit_sphere() {
+  vec3 p;
+  do {
+    p = 2.0f*vec3(drand48(), drand48(), drand48()) - vec3(1, 1, 1);
+  } while (p.sqr_length() >= 1.0f);
+  return p;
+}
 
 vec3 color(const ray& r, hitable *world) {
   hit_record rec;
-  if (world->hit(r, 0.0f, MAXFLOAT, rec))
-    return 0.5f*(rec.normal+vec3(1.0f, 1.0f, 1.0f));
+  if (world->hit(r, 0.0f, MAXFLOAT, rec)) {
+    vec3 target = rec.p + rec.normal + random_in_unit_sphere();
+    return 0.5f*color(ray(rec.p, target-rec.p), world);
+  }
 
   vec3 dir = normalize(r.direction());
   float t = 0.5f*(dir.y+1.0f);
