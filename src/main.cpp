@@ -2,9 +2,20 @@
 #include "vec3.hpp"
 #include "ray.hpp"
 
+bool hit_sphere(const vec3& center, float radius, const ray& r) {
+  const float a = dot(r.direction(), r.direction());
+  const float b = 2.0f*dot(r.direction(), r.origin()-center);
+  const float c = dot(r.origin()-center, r.origin()-center) - radius*radius;
+  const float discriminant = b*b - 4.0f*a*c;
+
+  return discriminant >= 0.0f;
+}
+
 vec3 color(const ray& r) {
   vec3 dir = normalize(r.direction());
   float t = 0.5f*(dir.y + 1.0f);
+  if (hit_sphere(vec3(0, 0, 3), 1, r))
+    return vec3(1, 0, 0);
   return (1.0f-t)*vec3(1.0f, 1.0f, 1.0f) + t*vec3(0.5f, 0.7f, 1.0f);
 }
 
