@@ -10,6 +10,7 @@ public:
   vec3 origin() const;
   vec3 direction() const;
   vec3 at(float t) const;
+  vec3 operator()(float t) const;
 
   vec3 A;
   vec3 B;
@@ -29,6 +30,10 @@ vec3 ray::direction() const {
 }
 
 vec3 ray::at(float t) const {
+  return (*this)(t);
+}
+
+vec3 ray::operator()(float t) const {
   return A + t*B;
 }
 
