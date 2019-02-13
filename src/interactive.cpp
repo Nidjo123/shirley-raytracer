@@ -217,9 +217,5 @@ int main() {
   tex.copyToImage().saveToFile("out.png");
   std::cout << "Saved image to out.png" << std::endl;
 
-  // no point since there are still leaks in the
-  // scene representation, will fix
-  delete world;
-
   return 0;
 }

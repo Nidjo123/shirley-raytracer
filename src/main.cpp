@@ -47,11 +47,8 @@ int main() {
       int ir = int(255.99 * col[0]);
       int ig = int(255.99 * col[1]);
       int ib = int(255.99 * col[2]);
-      // std::cout << ir << " " << ig << " " << ib << "\n";
+      std::cout << ir << " " << ig << " " << ib << "\n";
     }
-
-  std::cout << "Finished rendering in " << timer.get_millis() << "ms or "
-            << timer.get_seconds() << "s." << std::endl;
 
   return 0;
 }
