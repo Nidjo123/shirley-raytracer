@@ -94,11 +94,7 @@ struct Task {
   void move_in_pattern(int &rx, int &ry) {
     // snake pattern implementation
     static int x = -1, y = H_CNT - 1;
-    static int minx = 0, miny = 0, maxx = W_CNT, maxy = H_CNT - 1;
     static int dir = 0;
-
-    static const int dx[] = {+1, 0, -1, 0};
-    static const int dy[] = {0, -1, 0, +1};
 
     x = dir ? x - 1 : x + 1;
     if (x == W_CNT || x == -1) {
@@ -106,26 +102,6 @@ struct Task {
       y--;
       dir = !dir;
     }
-    rx = x;
-    ry = y;
-    return;
-
-    x += dx[dir];
-    y += dy[dir];
-    if (dir == 0 && x >= maxx) {
-      x = --maxx;
-      dir++;
-    } else if (dir == 1 && y < miny) {
-      y = miny++;
-      dir++;
-    } else if (dir == 2 && x < minx) {
-      x = minx++;
-      dir++;
-    } else if (dir == 3 && y >= maxy) {
-      y = --maxy;
-      dir = 0;
-    }
-
     rx = x;
     ry = y;
   }
