@@ -1,51 +1,47 @@
 #ifndef MATERIAL_HPP
 #define MATERIAL_HPP
 
-#include "vec3.hpp"
 #include "hitable.hpp"
+#include "vec3.hpp"
 
 vec3 random_in_unit_sphere();
 
 class material {
-public:
-  virtual bool scatter(const ray& r_in, const hit_record &rec, vec3& attenuation, ray& scattered) const = 0;
+ public:
+  virtual bool scatter(const ray& r_in, const hit_record& rec,
+                       vec3& attenuation, ray& scattered) const = 0;
 };
 
 // materials
 class lambertian;
 class metal;
 
-
 class lambertian : public material {
-public:
+ public:
   lambertian(const vec3& a);
-  virtual bool scatter(const ray& r_in, const hit_record &rec, vec3& attenuation, ray& scattered) const;
+  virtual bool scatter(const ray& r_in, const hit_record& rec,
+                       vec3& attenuation, ray& scattered) const;
 
   vec3 albedo;
 };
 
+lambertian::lambertian(const vec3& a) : albedo(a) {}
 
-
-lambertian::lambertian(const vec3& a)
-  : albedo(a) {
-
-}
-
-bool lambertian::scatter(const ray& r_in, const hit_record &rec, vec3& attenuation, ray& scattered) const {
+bool lambertian::scatter(const ray& r_in, const hit_record& rec,
+                         vec3& attenuation, ray& scattered) const {
   vec3 target = rec.p + rec.normal + random_in_unit_sphere();
-  scattered = ray(rec.p, target-rec.p);
+  scattered = ray(rec.p, target - rec.p);
   attenuation = albedo;
   return true;
 }
 
-vec3 reflect(const vec3& v, const vec3& n) {
-  return v - 2.0f*dot(v, n)*n;
-}
+vec3 reflect(const vec3& v, const vec3& n) { return v - 2.0f * dot(v, n) * n; }
 
 class metal : public material {
-public:
+ public:
   metal(const vec3& a, float f);
-  virtual bool scatter(const ray& r_in, const hit_record &rec, vec3& attenuation, ray& scattered) const;
+  virtual bool scatter(const ray& r_in, const hit_record& rec,
+                       vec3& attenuation, ray& scattered) const;
 
   vec3 albedo;
   float fuzz;
@@ -58,9 +54,10 @@ metal::metal(const vec3& a, float f) : albedo(a) {
     fuzz = 1.0f;
 }
 
-bool metal::scatter(const ray& r_in, const hit_record &rec, vec3& attenuation, ray& scattered) const {
+bool metal::scatter(const ray& r_in, const hit_record& rec, vec3& attenuation,
+                    ray& scattered) const {
   vec3 reflected = reflect(normalize(r_in.direction()), rec.normal);
-  scattered = ray(rec.p, reflected + fuzz*random_in_unit_sphere());
+  scattered = ray(rec.p, reflected + fuzz * random_in_unit_sphere());
   attenuation = albedo;
   return dot(scattered.direction(), rec.normal) > 0;
 }
@@ -68,33 +65,33 @@ bool metal::scatter(const ray& r_in, const hit_record &rec, vec3& attenuation, r
 bool refract(const vec3& v, const vec3& n, float ni_over_nt, vec3& refracted) {
   vec3 uv = normalize(v);
   float dt = dot(uv, n);
-  float discriminant = 1.f - ni_over_nt*ni_over_nt*(1.f-dt*dt);
+  float discriminant = 1.f - ni_over_nt * ni_over_nt * (1.f - dt * dt);
   if (discriminant > 0) {
-    refracted = ni_over_nt*(uv - dt*n) - n*std::sqrt(discriminant);
+    refracted = ni_over_nt * (uv - dt * n) - n * std::sqrt(discriminant);
     return true;
   }
   return false;
 }
 
 float schlick(float cosine, float ref_idx) {
-  float r0 = (1.f-ref_idx) / (1.f+ref_idx);
-  r0 = r0*r0;
-  return r0 + (1.f-r0)*pow((1.f-cosine),5.f);
+  float r0 = (1.f - ref_idx) / (1.f + ref_idx);
+  r0 = r0 * r0;
+  return r0 + (1.f - r0) * pow((1.f - cosine), 5.f);
 }
 
 class dielectric : public material {
-public:
+ public:
   dielectric(float ri);
-  virtual bool scatter(const ray& r_in, const hit_record &rec, vec3& attenuation, ray& scattered) const;
+  virtual bool scatter(const ray& r_in, const hit_record& rec,
+                       vec3& attenuation, ray& scattered) const;
 
   float ref_idx;
 };
 
-dielectric::dielectric(float ri) : ref_idx{ri} {
+dielectric::dielectric(float ri) : ref_idx{ri} {}
 
-}
-
-bool dielectric::scatter(const ray& r_in, const hit_record &rec, vec3& attenuation, ray& scattered) const {
+bool dielectric::scatter(const ray& r_in, const hit_record& rec,
+                         vec3& attenuation, ray& scattered) const {
   vec3 outward_normal;
   vec3 reflected = reflect(r_in.direction(), rec.normal);
   float ni_over_nt;
@@ -105,11 +102,11 @@ bool dielectric::scatter(const ray& r_in, const hit_record &rec, vec3& attenuati
   if (dot(r_in.direction(), rec.normal) > 0) {
     outward_normal = -rec.normal;
     ni_over_nt = ref_idx;
-    //         cosine = ref_idx * dot(r_in.direction(), rec.normal) / r_in.direction().length();
+    //         cosine = ref_idx * dot(r_in.direction(), rec.normal) /
+    //         r_in.direction().length();
     cosine = dot(r_in.direction(), rec.normal) / r_in.direction().length();
-    cosine = sqrt(1 - ref_idx*ref_idx*(1-cosine*cosine));
-  }
-  else {
+    cosine = sqrt(1 - ref_idx * ref_idx * (1 - cosine * cosine));
+  } else {
     outward_normal = rec.normal;
     ni_over_nt = 1.0 / ref_idx;
     cosine = -dot(r_in.direction(), rec.normal) / r_in.direction().length();
@@ -128,9 +125,9 @@ bool dielectric::scatter(const ray& r_in, const hit_record &rec, vec3& attenuati
 vec3 random_in_unit_sphere() {
   vec3 p;
   do {
-    p = 2.0f*vec3(drand48(), drand48(), drand48()) - vec3(1, 1, 1);
+    p = 2.0f * vec3(drand48(), drand48(), drand48()) - vec3(1, 1, 1);
   } while (p.sqr_length() >= 1.0f);
   return p;
 }
 
-#endif // MATERIAL_HPP
+#endif  // MATERIAL_HPP

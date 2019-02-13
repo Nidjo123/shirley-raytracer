@@ -1,8 +1,8 @@
 #ifndef HITABLE_HPP
 #define HITABLE_HPP
 
-#include "vec3.hpp"
 #include "ray.hpp"
+#include "vec3.hpp"
 
 class material;
 
@@ -10,12 +10,13 @@ struct hit_record {
   float t;
   vec3 p;
   vec3 normal;
-  material *mat;
+  material* mat;
 };
 
 class hitable {
-public:
-  virtual bool hit(const ray& r, float t_min, float t_max, hit_record& hitrec) const = 0;
+ public:
+  virtual bool hit(const ray& r, float t_min, float t_max,
+                   hit_record& hitrec) const = 0;
 };
 
-#endif // HITABLE_HPP
+#endif  // HITABLE_HPP
