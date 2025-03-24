@@ -2,6 +2,7 @@
 #define CAMERA_HPP
 
 #include "ray.hpp"
+#include "util.h"
 
 class camera {
  public:
@@ -20,7 +21,7 @@ class camera {
 vec3 random_in_unit_disk() {
   vec3 p;
   do {
-    p = 2.f * vec3(drand48(), drand48(), 0.f) - vec3(1.f, 1.f, 0.f);
+    p = 2.f * vec3(rand01(), rand01(), 0.f) - vec3(1.f, 1.f, 0.f);
   } while (dot(p, p) >= 1.f);
   return p;
 }

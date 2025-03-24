@@ -3,6 +3,7 @@
 
 #include "hitable.hpp"
 #include "vec3.hpp"
+#include "util.h"
 
 vec3 random_in_unit_sphere();
 
@@ -115,7 +116,7 @@ bool dielectric::scatter(const ray& r_in, const hit_record& rec,
     reflect_prob = schlick(cosine, ref_idx);
   else
     reflect_prob = 1.0;
-  if (drand48() < reflect_prob)
+  if (rand01() < reflect_prob)
     scattered = ray(rec.p, reflected);
   else
     scattered = ray(rec.p, refracted);
@@ -125,7 +126,7 @@ bool dielectric::scatter(const ray& r_in, const hit_record& rec,
 vec3 random_in_unit_sphere() {
   vec3 p;
   do {
-    p = 2.0f * vec3(drand48(), drand48(), drand48()) - vec3(1, 1, 1);
+    p = 2.0f * vec3(rand01(), rand01(), rand01()) - vec3(1, 1, 1);
   } while (p.sqr_length() >= 1.0f);
   return p;
 }

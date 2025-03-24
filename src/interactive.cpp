@@ -10,6 +10,7 @@
 
 #include "raytracer.hpp"
 #include "timer.hpp"
+#include "util.h"
 
 constexpr unsigned WIDTH = 1024;
 constexpr unsigned HEIGHT = 512;
@@ -142,8 +143,8 @@ struct Task {
           for (unsigned x = sx; x < sx + N; x++) {
             if (x < 0 || y < 0 || x >= WIDTH || y >= HEIGHT) continue;
 
-            const float u = float(x + drand48()) / float(WIDTH);
-            const float v = float(y + drand48()) / float(HEIGHT);
+            const float u = float(x + rand01()) / float(WIDTH);
+            const float v = float(y + rand01()) / float(HEIGHT);
             ray r = cam.get_ray(u, v);
             const vec3 col = color(r, world, 0);
 

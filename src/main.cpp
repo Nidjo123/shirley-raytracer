@@ -2,6 +2,7 @@
 
 #include "raytracer.hpp"
 #include "timer.hpp"
+#include "util.h"
 
 int main() {
   int nx = 1920;
@@ -37,8 +38,8 @@ int main() {
     for (int i = 0; i < nx; i++) {
       vec3 col(0, 0, 0);
       for (int s = 0; s < ns; s++) {
-        float u = float(i + drand48()) / float(nx);
-        float v = float(j + drand48()) / float(ny);
+        float u = float(i + rand01()) / float(nx);
+        float v = float(j + rand01()) / float(ny);
         ray r = cam.get_ray(u, v);
         col += color(r, world, 0);
       }

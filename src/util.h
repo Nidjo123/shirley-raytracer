@@ -1,0 +1,6 @@
+#ifndef SHIRLEY_RAYTRACER_UTIL_H
+#define SHIRLEY_RAYTRACER_UTIL_H
+
+double rand01();
+
+#endif //SHIRLEY_RAYTRACER_UTIL_H

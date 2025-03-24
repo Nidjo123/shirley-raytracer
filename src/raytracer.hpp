@@ -10,6 +10,7 @@
 #include "ray.hpp"
 #include "sphere.hpp"
 #include "vec3.hpp"
+#include "util.h"
 
 vec3 color(const ray &r, hitable *world, int depth) {
   hit_record rec;
@@ -35,23 +36,23 @@ hitable *random_scene() {
   int i = 1;
   for (int a = -11; a < 11; a++) {
     for (int b = -11; b < 11; b++) {
-      float choose_mat = drand48();
-      vec3 center(a + 0.9f * drand48(), 0.2f, b + 0.9f * drand48());
+      float choose_mat = rand01();
+      vec3 center(a + 0.9f * rand01(), 0.2f, b + 0.9f * rand01());
       if ((center - vec3(4.f, 0.2f, 0.f)).length() > 0.9) {
         if (choose_mat < 0.7) {  // diffuse
           list[i++] = new sphere(
               center, 0.2f,
-              new lambertian(vec3(drand48() * drand48(), drand48() * drand48(),
-                                  drand48() * drand48())));
+              new lambertian(vec3(rand01() * rand01(), rand01() * rand01(),
+                                  rand01() * rand01())));
         } else if (choose_mat < 0.9) {  // metal
           list[i++] = new sphere(
               center, 0.2f,
-              new metal(vec3(0.5f * (1.f + drand48()), 0.5f * (1.f + drand48()),
-                             0.5f * (1.f + drand48())),
-                        drand48() * drand48() * drand48()));
+              new metal(vec3(0.5f * (1.f + rand01()), 0.5f * (1.f + rand01()),
+                             0.5f * (1.f + rand01())),
+                        rand01() * rand01() * rand01()));
         } else {  // dielectric
           list[i++] =
-              new sphere(center, 0.2f, new dielectric(1.f + 3.f * drand48()));
+              new sphere(center, 0.2f, new dielectric(1.f + 3.f * rand01()));
         }
       }
     }
