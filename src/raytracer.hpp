@@ -4,6 +4,7 @@
 #include <cfloat>
 #include <cstdlib>
 #include <iostream>
+#include <limits>
 #include "camera.hpp"
 #include "hitable.hpp"
 #include "hitable_list.hpp"
@@ -14,7 +15,7 @@
 
 vec3 color(const ray &r, hitable *world, int depth) {
   hit_record rec;
-  if (world->hit(r, 0.001f, MAXFLOAT, rec)) {
+  if (world->hit(r, 0.001f, std::numeric_limits<float>::max(), rec)) {
     ray scattered;
     vec3 attenuation;
     if (depth < 50 && rec.mat->scatter(r, rec, attenuation, scattered))
