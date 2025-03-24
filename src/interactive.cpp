@@ -1,5 +1,6 @@
 #include <atomic>
 #include <cfloat>
+#include <cstdint>
 #include <cstdlib>
 #include <iostream>
 #include <mutex>
@@ -38,7 +39,7 @@ struct Pixels {
       : width{w},
         height{h},
         data{new float[width * height * 5]()},       // RGBA + sample count
-        pixels{new sf::Uint8[width * height * 4]()}  // RGBA
+        pixels{new std::uint8_t[width * height * 4]()}  // RGBA
   {}
 
   ~Pixels() {
@@ -46,7 +47,7 @@ struct Pixels {
     delete[] pixels;
   }
 
-  sf::Uint8 *get_pixels() {
+  std::uint8_t *get_pixels() {
     // convert accumulated pixels values so we can display them
     for (int i = 0; i < HEIGHT; i++)
       for (int j = 0; j < WIDTH; j++) {
@@ -54,11 +55,11 @@ struct Pixels {
         const unsigned pix_pos = ((HEIGHT - i - 1) * width + j) << 2;
         const float ns = data[data_pos + 4];  // number of accumulated samples
         pixels[pix_pos + 0] =
-            sf::Uint8(255.99f * (sqrtf(data[data_pos + 0] / ns)));
+            std::uint8_t(255.99f * (sqrtf(data[data_pos + 0] / ns)));
         pixels[pix_pos + 1] =
-            sf::Uint8(255.99f * (sqrtf(data[data_pos + 1] / ns)));
+            std::uint8_t(255.99f * (sqrtf(data[data_pos + 1] / ns)));
         pixels[pix_pos + 2] =
-            sf::Uint8(255.99f * (sqrtf(data[data_pos + 2] / ns)));
+            std::uint8_t(255.99f * (sqrtf(data[data_pos + 2] / ns)));
         pixels[pix_pos + 3] = 255u;
       }
 
@@ -84,7 +85,7 @@ struct Pixels {
 
  private:
   // use get_pixels()
-  sf::Uint8 *pixels;  // RGBA
+  std::uint8_t *pixels;  // RGBA
 } pixels{WIDTH, HEIGHT};
 
 struct Task {
@@ -165,19 +166,18 @@ struct Task {
 int Task::id = 0;
 
 int main() {
-  sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "Ray Tracing rules!",
+  sf::RenderWindow window(sf::VideoMode({WIDTH, HEIGHT}), "Ray Tracing rules!",
                           sf::Style::Titlebar | sf::Style::Close);
   sf::Texture tex;
-  sf::Sprite sprite;
 
-  if (!tex.create(WIDTH, HEIGHT)) {
+  if (!tex.resize({WIDTH, HEIGHT})) {
     std::cerr << "Couldn't create texture!" << std::endl;
     return 1;
   }
 
   tex.setSmooth(false);
 
-  sprite.setTexture(tex);
+  sf::Sprite sprite{tex};
 
   world = random_scene();
 
@@ -192,9 +192,10 @@ int main() {
   bool finished_rendering = false;
 
   while (window.isOpen()) {
-    sf::Event event;
-    while (window.pollEvent(event)) {
-      if (event.type == sf::Event::Closed) window.close();
+    while (const std::optional event = window.pollEvent()) {
+      if (event->is<sf::Event::Closed>()) {
+        window.close();
+      }
     }
 
     tex.update(pixels.get_pixels());
@@ -215,8 +216,11 @@ int main() {
   std::cout << "Waiting for all the threads to join." << std::endl;
   for (auto &t : threads) t.join();
 
-  tex.copyToImage().saveToFile("out.png");
-  std::cout << "Saved image to out.png" << std::endl;
+  if (tex.copyToImage().saveToFile("out.png")) {
+    std::cout << "Saved image to out.png" << std::endl;
+  } else {
+    std::cerr << "Failed to save image to out.png" << std::endl;
+  }
 
   return 0;
 }
